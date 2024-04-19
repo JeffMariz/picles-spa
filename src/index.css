@@ -13,6 +13,8 @@
   --color-gray-200: #d9d9d9;
   --color-gray-300: #5a5a5a;
   --color-gray-400: #1e1e1e;
+  
+  
 
   --font-family-sans-serif: 'Poppins', Helvetica, Arial, sans-serif;
   --font-size-base: 1rem; /* 16px */
@@ -26,6 +28,7 @@
 
 * {
   box-sizing: border-box;
+  background-color: #575757 !important;
 }
 
 html,
