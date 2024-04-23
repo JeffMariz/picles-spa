@@ -7,15 +7,16 @@ import { Grid } from "../../components/layout/Grid"
 import { usePetList } from "../../hooks/usePetList"
 import styles from './Pets.module.css'
 import { Select } from "../../components/common/Select"
-import { Button } from "../../components/common/Button"
+import { Button, ButtonVariant } from "../../components/common/Button"
 import { filterColumns } from "./Pets.Constants"
-import { FormEvent } from "react"
+import { ChangeEvent, FormEvent, useState } from "react"
 import { GetPetsRequest } from "../../interfaces/pet"
 
 
 
 export function Pets() {
 
+    const [isButtonEnabled, setIsButtonEnabled] = useState(false)
     const [searchParams, setSearchParams] = useSearchParams()
 
     const urlParams = {
@@ -27,6 +28,19 @@ export function Pets() {
     }
 
     const { data, isLoading } = usePetList(urlParams)
+
+    function checkButtonStatus (event: ChangeEvent<HTMLFormElement>){
+        const {type, size, gender } = getFormValue(event.target.form)
+
+        if (type !== urlParams.type || 
+            size !== urlParams.size ||
+            gender !== urlParams.gender 
+        ){
+            setIsButtonEnabled(true)
+        } else {
+            setIsButtonEnabled(false)
+        }
+    }
 
     function changePage(page: number) {
         setSearchParams((params) => {
@@ -61,13 +75,14 @@ export function Pets() {
         const newSearchParams = updateSearchParams(formValues)
     
         setSearchParams(newSearchParams)
+        setIsButtonEnabled(false)
       }
         
     return (
         <Grid>
             <div className={styles.container}>
                 <Header />
-                <form className={styles.filters} onSubmit={applyFilters}>
+                <form className={styles.filters} onSubmit={applyFilters} onChange={checkButtonStatus}>
                     <div className={styles.columns}>
                         {
                             filterColumns.map((filter) => (
@@ -79,7 +94,9 @@ export function Pets() {
                                 </div>
                             ))}
                     </div>
-                    <Button type="submit">Buscar</Button>
+                    <Button type="submit" variant={
+                        isButtonEnabled ? ButtonVariant.Default : ButtonVariant.Disabled
+                    }>Buscar</Button>
                 </form>
                 {
                     isLoading && (
