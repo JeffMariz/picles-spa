@@ -1,4 +1,4 @@
-import { UseFormRegister, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Button } from '../../../components/common/Button'
 import { Input } from '../../../components/common/Input'
 import {Panel} from '../../../components/layout/Panel'
@@ -6,6 +6,8 @@ import styles from './Shelter.module.css'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useHookFormMask } from 'use-mask-input'
+import { toast } from 'sonner'
+import { updateShelter } from '../../../services/shelter/updateShelter'
 
 const shelterSchema = z.object({
     name: z.string().min(2, 'Nome deve ter no mínimo 2 caracteres.').max(30, 'Nome deve ter no máximo 30 caracteres.'),
@@ -30,7 +32,22 @@ export function Shelter() {
 
     const registerWithMask = useHookFormMask(register)
 
-    function submit({ name, email, phone, whatsApp }: ShelterSchema) {
+    async function submit({ name, email, phone, whatsApp }: ShelterSchema) {
+        const toastId = toast.loading('Salvando dados')
+        try{
+          await updateShelter({name, email, phone: phone.replace(/\D/g, ''), whatsApp: whatsApp.replace(/\D/g, '')})
+          toast.success('Dados salvos com sucesso', {
+            id: toastId,
+            closeButton: true,
+          })
+        } 
+        catch {
+            toast.error('Não foi possível salvar os dados',{
+                id: toastId,
+                closeButton: true,
+            })
+
+        }
         console.log(name, email, phone, whatsApp )
     }
 
@@ -47,7 +64,7 @@ export function Shelter() {
             </div>
             
             <div>
-                <Input label="Telefone" {...registerWithMask('phone',['99 9999-9999', '99 99999-9999'])}/>
+                <Input label="Telefone" {...registerWithMask('phone', ['99 9999-9999', '99 99999-9999'])}/>
                 {formState.errors?.phone && <p className={styles.formError}>{formState.errors.phone.message}</p>}
             </div>
             
