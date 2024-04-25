@@ -31,11 +31,13 @@ export function Shelter() {
     })
 
     const registerWithMask = useHookFormMask(register)
+    const queryClient = useQueryClient()
 
     async function submit({ name, email, phone, whatsApp }: ShelterSchema) {
         const toastId = toast.loading('Salvando dados')
         try{
           await updateShelter({name, email, phone: phone.replace(/\D/g, ''), whatsApp: whatsApp.replace(/\D/g, '')})
+          queryClient.invalidateQueries({queryKey: ['get-shelter']})
           toast.success('Dados salvos com sucesso', {
             id: toastId,
             closeButton: true,
